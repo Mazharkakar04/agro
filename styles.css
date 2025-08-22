@@ -75,17 +75,9 @@ body {
 .product-image {
   width: 100%;
   height: auto;
-  max-height: 250px; /* A good size for desktop and larger screens */
-  object-fit: cover;
+  object-fit: contain;
   background: var(--light-green);
   border-bottom: 1px solid rgba(0,0,0,0.05);
-}
-
-/* For smaller screens (e.g., mobile devices) */
-@media (max-width: 768px) {
-  .product-image {
-    max-height: 150px; /* A smaller size for mobile */
-  }
 }
 
 .card-title {
@@ -143,9 +135,7 @@ body {
 .cart-item-img {
     height: 100px;
     width: 100%;
-    /* ensures it fills the horizontal space */
     object-fit: cover;
-    /* fills and crops to maintain aesthetics */
     background: var(--light-green);
     border-radius: 8px;
 }
@@ -247,5 +237,3 @@ footer a:hover {
         font-size: 1.8rem;
     }
 }
-
-
