@@ -90,7 +90,7 @@ function createProductCard(product) {
   
   col.innerHTML = `
     <div class="card product-card h-100 position-relative">
-      <img src="${product.image}" class="card-img-top product-image" alt="${product.name}">
+      <img src="${product.image}" class="card-img-top product-image mx-auto" alt="${product.name}">
       <div class="card-body d-flex flex-column">
         <div class="d-flex justify-content-between align-items-start">
           <h5 class="card-title">${product.name}</h5>
@@ -399,5 +399,6 @@ function loadCart() {
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', init);
+
 
 
