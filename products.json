@@ -1,1 +1,12 @@
 
+[
+  {
+    "id": 01,
+    "name": "Banana Juice",
+    "category": "Fertilizer",
+    "basePrice": 350,
+    "description": "Premium organic compost for soil enrichment and plant growth.",
+    "image": "https://i.ibb.co/rqhFWBM/IMG-20250821-WA0000.jpg",
+    "sizes": [{ "size": "1kg", "multiplier": 1 }, { "size": "3kg", "multiplier": 3 }]
+  }
+]
