@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Generator</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+}
+
+h1, h2 {
+    text-align: center;
+    color: #333;
+}
+
+form label, .output-container h2 {
+    display: block;
+    margin-top: 1rem;
+    font-weight: bold;
+}
+
+form input, form textarea, .output-container textarea {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.size-input-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 0.5rem;
+}
+
+.size-input-group input {
+    flex: 1;
+}
+
+button {
+    width: 100%;
+    padding: 0.75rem;
+    margin-top: 1.5rem;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#add-size {
+    background-color: #6c757d;
+}
+
+#add-size:hover {
+    background-color: #5a6268;
+}
+
+.output-container {
+    margin-top: 2rem;
+}
+
+#json-output {
+    height: 200px;
+    background-color: #f9f9f9;
+}
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Product JSON Generator</h1>
+        <form id="json-form">
+            <label for="id">Product ID:</label>
+            <input type="number" id="id" required>
+
+            <label for="name">Product Name:</label>
+            <input type="text" id="name" required>
+
+            <label for="category">Category:</label>
+            <input type="text" id="category" required>
+
+            <label for="basePrice">Base Price:</label>
+            <input type="number" id="basePrice" required>
+
+            <label for="description">Description:</label>
+            <textarea id="description" required></textarea>
+
+            <label for="image">Image URL:</label>
+            <input type="url" id="image" required>
+
+            <div id="sizes-container">
+                <label>Sizes (Size & Multiplier):</label>
+                <div class="size-input-group">
+                    <input type="text" class="size" placeholder="e.g., 10kg" required>
+                    <input type="number" class="multiplier" placeholder="e.g., 1" required>
+                </div>
+            </div>
+            <button type="button" id="add-size">Add Another Size</button>
+
+            <button type="submit">Generate JSON</button>
+        </form>
+
+        <div class="output-container">
+            <h2>Generated JSON</h2>
+            <textarea id="json-output" readonly></textarea>
+            <button onclick="copyToClipboard()">Copy JSON</button>
+        </div>
+    </div>
+    <script>
+        document.getElementById('json-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    // Get all input values
+    const id = parseInt(document.getElementById('id').value);
+    const name = document.getElementById('name').value;
+    const category = document.getElementById('category').value;
+    const basePrice = parseFloat(document.getElementById('basePrice').value);
+    const description = document.getElementById('description').value;
+    const image = document.getElementById('image').value;
+
+    // Get all sizes
+    const sizeInputs = document.querySelectorAll('.size-input-group');
+    const sizes = [];
+    sizeInputs.forEach(group => {
+        const size = group.querySelector('.size').value;
+        const multiplier = parseFloat(group.querySelector('.multiplier').value);
+        if (size && !isNaN(multiplier)) {
+            sizes.push({ size, multiplier });
+        }
+    });
+
+    // Create the product object
+    const product = {
+        id: id,
+        name: name,
+        category: category,
+        basePrice: basePrice,
+        description: description,
+        image: image,
+        sizes: sizes
+    };
+
+    // Create the final JSON array and format it
+    const jsonOutput = JSON.stringify([product], null, 2);
+
+    // Display the JSON
+    document.getElementById('json-output').value = jsonOutput;
+});
+
+// Function to add a new size input field
+document.getElementById('add-size').addEventListener('click', function() {
+    const container = document.getElementById('sizes-container');
+    const newSizeGroup = document.createElement('div');
+    newSizeGroup.className = 'size-input-group';
+    newSizeGroup.innerHTML = `
+        <input type="text" class="size" placeholder="e.g., 25kg" required>
+        <input type="number" class="multiplier" placeholder="e.g., 2.2" required>
+    `;
+    container.appendChild(newSizeGroup);
+});
+
+// Function to copy the JSON text to clipboard
+function copyToClipboard() {
+    const jsonOutput = document.getElementById('json-output');
+    jsonOutput.select();
+    jsonOutput.setSelectionRange(0, 99999); // For mobile devices
+
+    try {
+        navigator.clipboard.writeText(jsonOutput.value);
+        alert('JSON copied to clipboard!');
+    } catch (err) {
+        console.error('Failed to copy text: ', err);
+        alert('Failed to copy JSON. Please copy it manually.');
+    }
+}
+    </script>
+</body>
+</html>
