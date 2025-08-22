@@ -3,11 +3,10 @@
 // Import Firebase modules
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
 
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
     apiKey: "AIzaSyBJSyhae-k3McariycR14uB5jgNflcIBk0",
     authDomain: "jilani-agro.firebaseapp.com",
@@ -27,7 +26,18 @@ const storage = getStorage(app);
 export async function loginAdmin(email, password) {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    return { success: true, user: userCredential.user };
+    const user = userCredential.user;
+    
+    // Check if the user is an admin
+    const adminRef = doc(db, "admins", user.uid);
+    const adminDoc = await getDoc(adminRef);
+
+    if (adminDoc.exists() && adminDoc.data().role === 'admin') {
+      return { success: true, user };
+    } else {
+      await signOut(auth); // Log out non-admin user immediately
+      return { success: false, error: "Access denied. Not an admin." };
+    }
   } catch (error) {
     console.error("Login error:", error);
     return { success: false, error: error.message };
@@ -76,7 +86,7 @@ export async function addProduct(productData) {
   }
 }
 
-export async function updateProduct(productId, productData) {
+export async function updateProduct(productData) {
   try {
     // Upload image to Firebase Storage if there's a new file
     if (productData.imageFile) {
@@ -87,9 +97,9 @@ export async function updateProduct(productId, productData) {
       delete productData.imageFile; // Remove the file object before storing in Firestore
     }
     
-    const productRef = doc(db, "products", productId);
+    const productRef = doc(db, "products", productData.id);
     await updateDoc(productRef, productData);
-    return { id: productId, ...productData };
+    return { id: productData.id, ...productData };
   } catch (error) {
     console.error("Error updating product:", error);
     throw error;
@@ -110,22 +120,9 @@ export async function deleteProduct(productId) {
 export async function saveUserCart(userId, cartItems) {
   try {
     const cartRef = doc(db, "carts", userId);
-    await updateDoc(cartRef, { items: cartItems });
+    await setDoc(cartRef, { items: cartItems }, { merge: true }); // Use setDoc to create or update
     return { success: true };
   } catch (error) {
-    // If the document doesn't exist, create it
-    if (error.code === 'not-found') {
-      try {
-        await addDoc(collection(db, "carts"), {
-          userId: userId,
-          items: cartItems
-        });
-        return { success: true };
-      } catch (innerError) {
-        console.error("Error creating cart:", innerError);
-        throw innerError;
-      }
-    }
     console.error("Error saving cart:", error);
     throw error;
   }
