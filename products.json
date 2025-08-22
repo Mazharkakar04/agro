@@ -1,1 +1,9 @@
-
+{
+  "id": 1,
+  "name": "Hot Pepper Hybrid (HPH-5531) Chilli Seeds",
+  "category": "Seeds",
+  "basePrice": 150,
+  "description": "High-quality seeds for maximum yield.",
+  "image": "https://i.ibb.co/C35jvfLR/5.png",
+  "sizes": [{ "size": "100g", "multiplier": 1 }, { "size": "200g", "multiplier": 1.8 }]
+}
