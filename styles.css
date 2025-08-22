@@ -73,11 +73,19 @@ body {
 }
 
 .product-image {
-  height: 180px;
   width: 100%;
+  height: auto;
+  max-height: 250px; /* A good size for desktop and larger screens */
   object-fit: cover;
   background: var(--light-green);
   border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+/* For smaller screens (e.g., mobile devices) */
+@media (max-width: 768px) {
+  .product-image {
+    max-height: 150px; /* A smaller size for mobile */
+  }
 }
 
 .card-title {
@@ -239,4 +247,5 @@ footer a:hover {
         font-size: 1.8rem;
     }
 }
+
 
