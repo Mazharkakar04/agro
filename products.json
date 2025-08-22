@@ -1,1 +1,11 @@
-
+[
+  {
+    "id": 101,
+    "name": "Organic Compost Mix",
+    "category": "Fertilizer",
+    "basePrice": 350,
+    "description": "Premium organic compost for soil enrichment and plant growth.",
+    "image": "4.png",
+    "sizes": [{ "size": "10kg", "multiplier": 1 }, { "size": "25kg", "multiplier": 2.2 }]
+  }
+]
