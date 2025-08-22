@@ -341,7 +341,7 @@ function orderOnWhatsApp() {
         return;
     }
 
-    let message = "🛒 *NEW ORDER - JILANI AGRO PRODUCTS* 🛒\n\n";
+    let message = "🛒 *NEW ORDER - SMART AGRO PRODUCTS* 🛒\n\n";
     message += "*Order Details:*\n\n";
 
     cart.forEach((item, index) => {
@@ -355,9 +355,9 @@ function orderOnWhatsApp() {
     message += `*TOTAL ITEMS: ${cart.reduce((sum, item) => sum + item.quantity, 0)}*\n`;
     message += `*TOTAL AMOUNT: ₹${totalAmount}*\n\n`;
     message += "Please confirm this order and provide delivery address.\n\n";
-    message += "_Thank you for choosing Jilani Agro!_";
+    message += "_Thank you for choosing Smart Agro!_";
 
-    const whatsappNumber = "919561768395";
+    const whatsappNumber = "919356579997";
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
 }
@@ -399,6 +399,7 @@ function loadCart() {
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', init);
+
 
 
 
