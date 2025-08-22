@@ -572,6 +572,14 @@ function updateSizeInputs() {
   `;
 }
 
+// Handle image preview
+document.getElementById('product-image').addEventListener('input', function(e) {
+  const url = e.target.value;
+  const preview = document.getElementById('image-preview');
+  preview.src = url;
+  preview.style.display = 'block';
+});
+
 // Add product locally
 function handleAddProduct(event) {
   event.preventDefault();
@@ -792,11 +800,4 @@ function handleDeleteProduct(productId) {
 document.addEventListener('DOMContentLoaded', function() {
    init();
    document.getElementById('product-form').addEventListener('submit', handleAddProduct);
-   
-   document.getElementById('product-image').addEventListener('input', function(e) {
-      const url = e.target.value;
-      const preview = document.getElementById('image-preview');
-      preview.src = url;
-      preview.style.display = 'block';
-   });
- });
+});
