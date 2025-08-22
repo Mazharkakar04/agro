@@ -3,6 +3,91 @@ let products = [];
 let cart = [];
 let currentSort = 'default';
 
+// Localization
+const translations = {
+    en: {
+        'title': 'Smart Agro - Premium Farm Products',
+        'lang-button': 'Language',
+        'hero-title': 'Premium Agricultural Products',
+        'hero-subtitle': 'High-quality fertilizers and plant nutrients for maximum crop yield and healthy soil',
+        'search-placeholder': 'Search products...',
+        'products-heading': 'OUR PRODUCTS',
+        'cart-heading': 'Your Cart',
+        'continue-shopping': 'Continue Shopping',
+        'empty-cart-title': 'Your cart is empty',
+        'empty-cart-text': 'Add some fresh products to get started!',
+        'browse-products': 'Browse Products',
+        'summary-heading': 'Order Summary',
+        'total-items': 'Total Items:',
+        'total-amount': 'Total Amount:',
+        'order-whatsapp': 'Order on WhatsApp',
+        'card-label-size': 'Size:',
+        'card-label-quantity': 'Quantity:',
+        'add-to-cart': 'Add to Cart',
+        'footer-text': 'Providing high-quality agricultural solutions to farmers. Committed to sustainable farming practices.',
+        'quick-links': 'Quick Links',
+        'link-home': 'Home',
+        'link-products': 'Products',
+        'link-cart': 'Cart',
+        'copyright': '© 2025 Smart Agro. All rights reserved.',
+        'toast-added-to-cart': 'added to cart!',
+        'toast-cart-empty': 'Your cart is empty!'
+    },
+    hi: {
+        'title': 'स्मार्ट एग्रो - प्रीमियम कृषि उत्पाद',
+        'lang-button': 'भाषा',
+        'hero-title': 'प्रीमियम कृषि उत्पाद',
+        'hero-subtitle': 'अधिकतम फसल उपज और स्वस्थ मिट्टी के लिए उच्च गुणवत्ता वाले उर्वरक और पौध पोषक तत्व',
+        'search-placeholder': 'उत्पादों को खोजें...',
+        'products-heading': 'हमारे उत्पाद',
+        'cart-heading': 'आपकी कार्ट',
+        'continue-shopping': 'खरीदारी जारी रखें',
+        'empty-cart-title': 'आपकी कार्ट खाली है',
+        'empty-cart-text': 'शुरू करने के लिए कुछ ताजे उत्पाद जोड़ें!',
+        'browse-products': 'उत्पादों को ब्राउज़ करें',
+        'summary-heading': 'ऑर्डर सारांश',
+        'total-items': 'कुल आइटम:',
+        'total-amount': 'कुल राशि:',
+        'order-whatsapp': 'व्हाट्सएप पर ऑर्डर करें',
+        'card-label-size': 'आकार:',
+        'card-label-quantity': 'मात्रा:',
+        'add-to-cart': 'कार्ट में जोड़ें',
+        'footer-text': 'किसानों को उच्च गुणवत्ता वाले कृषि समाधान प्रदान करना। टिकाऊ खेती के तरीकों के लिए प्रतिबद्ध।',
+        'quick-links': 'त्वरित लिंक',
+        'link-home': 'होम',
+        'link-products': 'उत्पाद',
+        'link-cart': 'कार्ट',
+        'copyright': '© 2025 स्मार्ट एग्रो। सर्वाधिकार सुरक्षित।',
+        'toast-added-to-cart': 'कार्ट में जोड़ा गया!',
+        'toast-cart-empty': 'आपकी कार्ट खाली है!'
+    }
+};
+
+let currentLanguage = 'en';
+
+// Switch language
+function switchLanguage(lang) {
+    currentLanguage = lang;
+    document.documentElement.lang = lang;
+    
+    // Update all static text with data-lang-key
+    document.querySelectorAll('[data-lang-key]').forEach(element => {
+        const key = element.getAttribute('data-lang-key');
+        if (translations[lang][key]) {
+            if (element.tagName === 'INPUT' && element.hasAttribute('placeholder')) {
+                element.placeholder = translations[lang][key];
+            } else {
+                element.textContent = translations[lang][key];
+            }
+        }
+    });
+
+    // Update dynamically generated content
+    displayProducts();
+    displayCartItems();
+    updateCartSummary();
+}
+
 // Initialize the app
 async function init() {
     try {
@@ -18,7 +103,7 @@ async function init() {
         products = parseCsvToProducts(csvData);
 
         loadCart();
-        displayProducts();
+        switchLanguage('en'); // Set initial language to English
         updateCartCount();
     } catch (error) {
         console.error("Initialization error:", error);
@@ -97,7 +182,7 @@ function createProductCard(product) {
         </div>
         <p class="small text-muted mb-2">${product.category}</p>
         <div class="mb-3">
-          <label class="form-label fw-medium">Size:</label>
+          <label class="form-label fw-medium" data-lang-key="card-label-size">${translations[currentLanguage]['card-label-size']}</label>
           <select class="form-select form-select-sm border-success" id="size-${product.id}" onchange="updatePrice(${product.id})">
             ${product.sizes.map(size => {
         const price = Math.round(product.basePrice * size.multiplier);
@@ -108,7 +193,7 @@ function createProductCard(product) {
           </select>
         </div>
         <div class="mb-3">
-          <label class="form-label fw-medium">Quantity:</label>
+          <label class="form-label fw-medium" data-lang-key="card-label-quantity">${translations[currentLanguage]['card-label-quantity']}</label>
           <div class="quantity-controls">
             <button class="quantity-btn" onclick="changeQuantity(${product.id}, -1)">-</button>
             <input type="number" class="quantity-input" id="qty-${product.id}" value="1" min="1" max="99">
@@ -119,8 +204,8 @@ function createProductCard(product) {
           <div class="d-flex align-items-center">
             <div class="price-tag me-2" id="price-${product.id}">₹${defaultPrice}</div>
           </div>
-          <button class="btn btn-success w-100 mt-2 fw-medium" onclick="addToCart(${product.id})">
-            <i class="fas fa-cart-plus me-2"></i>Add to Cart
+          <button class="btn btn-success w-100 mt-2 fw-medium" onclick="addToCart(${product.id})" data-lang-key="add-to-cart">
+            <i class="fas fa-cart-plus me-2"></i>${translations[currentLanguage]['add-to-cart']}
           </button>
         </div>
       </div>
@@ -194,7 +279,7 @@ function addToCart(productId) {
 
     saveCart();
     updateCartCount();
-    showToast(`${product.name} (${selectedSize}) added to cart!`);
+    showToast(`${product.name} (${selectedSize}) ${translations[currentLanguage]['toast-added-to-cart']}`);
 }
 
 // Show toast notification
@@ -248,10 +333,10 @@ function displayCartItems() {
         cartItemsContainer.innerHTML = `
       <div class="empty-cart">
         <i class="fas fa-shopping-cart fa-3x mb-3"></i>
-        <h4>Your cart is empty</h4>
-        <p class="mb-4">Add some fresh products to get started!</p>
+        <h4>${translations[currentLanguage]['empty-cart-title']}</h4>
+        <p class="mb-4">${translations[currentLanguage]['empty-cart-text']}</p>
         <button class="btn btn-success px-4 py-2 fw-medium" onclick="showProducts()">
-          <i class="fas fa-leaf me-2"></i>Browse Products
+          <i class="fas fa-leaf me-2"></i>${translations[currentLanguage]['browse-products']}
         </button>
       </div>
     `;
@@ -271,7 +356,7 @@ function displayCartItems() {
               <div class="col-md-6 col-12 cart-item-details">
                 <h5 class="card-title mb-1">${item.name}</h5>
                 <p class="card-text mb-1">
-                  <span class="text-muted">Size: ${item.size}</span>
+                  <span class="text-muted">${translations[currentLanguage]['card-label-size']}: ${item.size}</span>
                 </p>
                 <p class="card-text mb-0">
                   <span class="text-success fw-medium">₹${item.price} each</span>
@@ -337,7 +422,7 @@ function updateCartSummary() {
 // Order on WhatsApp
 function orderOnWhatsApp() {
     if (cart.length === 0) {
-        showToast('Your cart is empty!');
+        showToast(translations[currentLanguage]['toast-cart-empty']);
         return;
     }
 
@@ -399,9 +484,3 @@ function loadCart() {
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', init);
-
-
-
-
-
-
