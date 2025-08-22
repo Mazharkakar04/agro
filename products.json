@@ -8,5 +8,13 @@
     "description": "Premium organic compost for soil enrichment and plant growth.",
     "image": "https://i.ibb.co/rqhFWBM/IMG-20250821-WA0000.jpg",
     "sizes": [{ "size": "1kg", "multiplier": 1 }, { "size": "3kg", "multiplier": 3 }]
-  }
+  },
+{
+  "id": 2,
+  "name": "Next item",
+  "category": "whatever",
+  "description": "write your description here",
+  "image": "https://i.ibb.co/rqhFWBM/IMG-20250821-WA0000.jpg",
+  "sizes": [{"size": "1kg", "multiplier": 1}, {"size": "2kg", "multiplier": 2},]
+}  
 ]
