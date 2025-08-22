@@ -7,7 +7,7 @@ let currentSort = 'default';
 async function init() {
   try {
     // Replace this URL with your published Google Sheet CSV URL
-    const googleSheetUrl = 'YOUR_PUBLISHED_GOOGLE_SHEET_URL_HERE';
+    const googleSheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTulUvh8oHP_3zL3k3z1dDFmVtbEOC86a2CDurhILvVEjJxclMKea-ITH1mazVyuoo2L_INaRBq8u5s/pub?gid=0&single=true&output=csv';
     const response = await fetch(googleSheetUrl);
     
     if (!response.ok) {
@@ -399,3 +399,4 @@ function loadCart() {
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', init);
+
