@@ -83,7 +83,7 @@ function displayProducts(productsToShow = products) {
 // Create product card
 function createProductCard(product) {
   const col = document.createElement('div');
-  col.className = 'col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-4';
+  col.className = 'col-xl-3 col-lg-4 col-md-6 col-sm-6 col-6 mb-4';
   
   const defaultSize = product.sizes[0];
   const defaultPrice = Math.round(product.basePrice * defaultSize.multiplier);
@@ -399,4 +399,5 @@ function loadCart() {
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', init);
+
 
