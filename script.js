@@ -1,9 +1,7 @@
-// Import Firebase functions
+// Import simplified, local functions
 import { 
   getProducts, addProduct, updateProduct, deleteProduct,
-  loginAdmin, logoutAdmin, onAuthStateChange,
-  saveUserCart, getUserCart,
-  auth, db
+  loginAdmin, logoutAdmin
 } from './firebase.js';
 
 // Global variables
@@ -18,27 +16,14 @@ let isLoading = false;
     async function init() {
       showLoading();
       try {
-        // Check if user is already logged in
-        onAuthStateChange(async (user) => {
-          currentUser = user;
-          if (user) {
-            const adminDoc = await db.collection('admins').doc(user.uid).get();
-            adminLoggedIn = adminDoc.exists && adminDoc.data().role === 'admin';
-          } else {
-            adminLoggedIn = false;
-          }
-
-          if (adminLoggedIn) {
-            document.querySelector('.admin-login-btn').style.display = 'none';
-          } else {
-            document.querySelector('.admin-login-btn').style.display = 'flex';
-          }
-        });
+        // Since there is no authentication, we set adminLoggedIn to false initially
+        adminLoggedIn = false;
+        document.querySelector('.admin-login-btn').style.display = 'flex';
         
-        // Load products from Firestore
+        // Load products from the local data store
         await loadProducts();
         
-        // Load cart from localStorage (will be updated to use Firestore with user authentication)
+        // Load cart from localStorage
         loadCart();
         
         // Display products and update UI
@@ -53,17 +38,14 @@ let isLoading = false;
       }
     }
 
-    // Load products from Firestore
+    // Load products from local data store
     async function loadProducts() {
-      // Hardcode product data and image paths
-      products = [
-        { id: 1, name: 'Hot Pepper Hybrid (HPH-5531) Chilli Seeds', category: 'Seeds', basePrice: 150, description: '...', image: './images/product1.png', sizes: [{size: '100g', multiplier: 1}] },
-        { id: 2, name: 'Syngenta TO-1057 Tomato Seeds', category: 'Seeds', basePrice: 200, description: '...', image: './images/product2.png', sizes: [{size: '100g', multiplier: 1}] },
-        { id: 3, name: 'Cheramy RZ F1 (72-122) Cherry Tomato Seeds', category: 'Seeds', basePrice: 250, description: '...', image: './images/product3.png', sizes: [{size: '100g', multiplier: 1}] },
-        { id: 4, name: 'Hybrid Hot Pepper Sitara', category: 'Seeds', basePrice: 180, description: '...', image: './images/product4.png', sizes: [{size: '100g', multiplier: 1}] },
-        { id: 5, name: 'Dhaincha Seeds Sesbania aculeata', category: 'Seeds', basePrice: 120, description: '...', image: './images/product5.png', sizes: [{size: '100g', multiplier: 1}] },
-        { id: 6, name: 'Sunrise BIO-FERTILIZER', category: 'Fertilizer', basePrice: 300, description: '...', image: './images/product6.png', sizes: [{size: '1kg', multiplier: 1}] }
-      ];
+      try {
+        products = await getProducts();
+      } catch (error) {
+        console.error('Error loading products:', error);
+        products = [];
+      }
     }
     
     // Show loading spinner
@@ -213,8 +195,8 @@ let isLoading = false;
         cart.push(cartItem);
       }
 
-      // Save cart to local storage and Firestore if user is logged in
-      await saveCart();
+      // Save cart to local storage
+      saveCart();
       updateCartCount();
       
       // Show toast notification
@@ -340,7 +322,7 @@ let isLoading = false;
         cart[index].total = cart[index].price * cart[index].quantity;
       }
       
-      await saveCart();
+      saveCart();
       updateCartCount();
       displayCartItems();
     }
@@ -348,7 +330,7 @@ let isLoading = false;
     // Remove from cart
     async function removeFromCart(index) {
       cart.splice(index, 1);
-      await saveCart();
+      saveCart();
       updateCartCount();
       displayCartItems();
     }
@@ -403,33 +385,18 @@ let isLoading = false;
       }
     }
 
-    // Save cart to localStorage and Firestore if user is logged in
+    // Save cart to localStorage
     async function saveCart() {
       try {
         localStorage.setItem('jilaniAgroCart', JSON.stringify(cart));
-        
-        // If user is logged in, save to Firestore
-        if (currentUser) {
-          await saveUserCart(currentUser.uid, cart);
-        }
       } catch (error) {
         console.log('Error saving cart:', error);
       }
     }
 
-    // Load cart from localStorage or Firestore if user is logged in
+    // Load cart from localStorage
     async function loadCart() {
       try {
-        // First try to load from Firestore if user is logged in
-        if (currentUser) {
-          const userCart = await getUserCart(currentUser.uid);
-          if (userCart && userCart.length > 0) {
-            cart = userCart;
-            return;
-          }
-        }
-        
-        // Fall back to localStorage if no Firestore cart or not logged in
         const cartData = localStorage.getItem('jilaniAgroCart');
         if (cartData) {
           cart = JSON.parse(cartData);
@@ -452,7 +419,7 @@ let isLoading = false;
       document.getElementById('admin-login-modal').style.display = 'none';
     }
     
-    // Admin login with Firebase Authentication
+    // Admin login with a simple check
     async function adminLogin(event) {
       event.preventDefault();
       showLoading();
@@ -468,6 +435,7 @@ let isLoading = false;
           hideAdminLogin();
           showAdminPanel();
           errorElement.style.display = 'none';
+          document.querySelector('.admin-login-btn').style.display = 'none';
         } else {
           errorElement.textContent = result.error || 'Invalid credentials';
           errorElement.style.display = 'block';
@@ -481,13 +449,13 @@ let isLoading = false;
       }
     }
     
-    // Admin logout with Firebase Authentication
+    // Admin logout
     async function adminLogout() {
       showLoading();
       try {
-        await logoutAdmin();
         adminLoggedIn = false;
         showProducts();
+        document.querySelector('.admin-login-btn').style.display = 'flex';
       } catch (error) {
         console.error("Logout error:", error);
         showToast('Error logging out');
@@ -556,7 +524,7 @@ let isLoading = false;
       }
     });
     
-    // Add product to Firestore
+    // Add product locally
     async function handleAddProduct(event) {
       event.preventDefault();
       showLoading();
@@ -567,7 +535,7 @@ let isLoading = false;
         const category = document.getElementById('product-category').value;
         const basePrice = parseFloat(document.getElementById('product-price').value);
         const description = document.getElementById('product-description').value;
-        const imageFile = document.getElementById('product-image').files[0];
+        const imageUrl = document.getElementById('product-image').value;
         
         // Get sizes
         const sizes = [];
@@ -588,8 +556,8 @@ let isLoading = false;
           return;
         }
         
-        if (!imageFile) {
-          showToast('Please select a product image!');
+        if (!imageUrl) {
+          showToast('Please provide an image URL!');
           return;
         }
         
@@ -605,11 +573,10 @@ let isLoading = false;
           category,
           description,
           sizes,
-          imageFile, // This will be processed in the Firebase function
-          createdAt: new Date()
+          image: imageUrl
         };
         
-        // Add to Firestore using the imported function
+        // Add to local store
         await addProduct(newProduct);
         
         // Reload products
@@ -663,7 +630,7 @@ let isLoading = false;
     
     function handleEditProduct(productId) {
       currentEditingProductId = productId;
-      const product = products.find(p => p.id === productId);
+      const product = products.find(p => p.id === parseInt(productId));
       
       if (!product) return;
       
@@ -672,6 +639,7 @@ let isLoading = false;
       document.getElementById('product-category').value = product.category;
       document.getElementById('product-price').value = product.basePrice;
       document.getElementById('product-description').value = product.description;
+      document.getElementById('product-image').value = product.image;
       
       // Clear existing size inputs
       document.getElementById('size-container').innerHTML = '';
@@ -694,7 +662,7 @@ let isLoading = false;
       form.scrollIntoView({ behavior: 'smooth' });
     }
     
-    // Update product in Firestore
+    // Update product locally
     async function handleUpdateProduct(event) {
       event.preventDefault();
       showLoading();
@@ -705,7 +673,7 @@ let isLoading = false;
         const category = document.getElementById('product-category').value;
         const basePrice = parseFloat(document.getElementById('product-price').value);
         const description = document.getElementById('product-description').value;
-        const imageFile = document.getElementById('product-image').files[0];
+        const imageUrl = document.getElementById('product-image').value;
         
         // Get sizes
         const sizes = [];
@@ -733,21 +701,16 @@ let isLoading = false;
         
         // Create product object
         const updatedProduct = {
-          id: currentEditingProductId,
+          id: parseInt(currentEditingProductId),
           name,
           basePrice,
           category,
           description,
           sizes,
-          updatedAt: new Date()
+          image: imageUrl
         };
         
-        // Add image file if a new one was selected
-        if (imageFile) {
-          updatedProduct.imageFile = imageFile;
-        }
-        
-        // Update in Firestore using the imported function
+        // Update in local store
         await updateProduct(updatedProduct);
         
         // Reload products
@@ -788,12 +751,11 @@ let isLoading = false;
       currentEditingProductId = null;
     }
     
-    // Delete product from Firestore
+    // Delete product from local store
     async function handleDeleteProduct(productId) {
       if (confirm('Are you sure you want to delete this product?')) {
         showLoading();
         try {
-          // Call the imported deleteProduct function
           await deleteProduct(productId);
           await loadProducts();
           updateAdminProductsList();
@@ -810,43 +772,13 @@ let isLoading = false;
     // Event listeners
     document.addEventListener('DOMContentLoaded', function() {
        init();
-       
-       // Product form submission
        document.getElementById('product-form').addEventListener('submit', handleAddProduct);
        
-       // Add size button - using the onclick attribute in HTML
-       // document.getElementById('btn-add-size').addEventListener('click', addSizeInput);
-       
-       // Admin login form - using the onsubmit attribute in HTML
-       // document.getElementById('admin-login-form').addEventListener('submit', adminLogin);
-       
-       // Admin logout button - using the onclick attribute in HTML
-       // document.getElementById('btn-admin-logout').addEventListener('click', adminLogout);
-       
-       // Show admin login modal - using the onclick attribute in HTML
-       // document.querySelector('.admin-login-btn').addEventListener('click', showAdminLogin);
-       
-       // Close admin login modal - no element with class 'close-admin-modal' found
-       // We'll need to add this element or use another selector
-       
-       // Sort products
-       const sortSelect = document.getElementById('sort-select');
-       if (sortSelect) {
-         sortSelect.addEventListener('change', function() {
-           currentSort = this.value;
-           displayProducts();
-         });
-       }
-       
-       // Search products - using the onkeyup attribute in HTML
-       // document.getElementById('search-input').addEventListener('input', searchProducts);
-       
-       // Show products button - using onclick attributes in HTML
-       // document.getElementById('btn-show-products').addEventListener('click', showProducts);
-       
-       // Show cart button - using onclick attributes in HTML
-       // document.getElementById('btn-show-cart').addEventListener('click', showCart);
-       
-       // Show admin button - no element with id 'btn-show-admin' found
-       // We'll need to add this element or use another selector
+       // Handle image URL preview
+       document.getElementById('product-image').addEventListener('input', function(e) {
+          const url = e.target.value;
+          const preview = document.getElementById('image-preview');
+          preview.src = url;
+          preview.style.display = 'block';
+       });
      });
