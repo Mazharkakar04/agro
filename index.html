@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jilani Agro - Premium Farm Products</title>
+  <link rel="icon" href="./images/fevicon_icon.png" type="image/x-icon">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css">
+  <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+  <script type="module" src="firebase.js"></script>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="#" onclick="showProducts()">
+        <i class="fas fa-seedling me-2"></i>Jilani Agro
+      </a>
+      <div class="d-flex align-items-center">
+        <button class="btn btn-outline-success position-relative me-2" onclick="showCart()">
+          <i class="fas fa-shopping-cart"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge" id="cart-count">0</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <h1 class="hero-title">Premium Agricultural Products</h1>
+      <p class="hero-subtitle">High-quality fertilizers and plant nutrients for maximum crop yield and healthy soil</p>
+      
+      <!-- Search Bar -->
+      <div class="row justify-content-center mb-4">
+        <div class="col-lg-6 col-md-8">
+          <div class="input-group shadow-sm">
+            <span class="input-group-text bg-success text-white"><i class="fas fa-search"></i></span>
+            <input
+              type="text"
+              class="form-control border-success"
+              id="search-input"
+              placeholder="Search products..."
+              onkeyup="searchProducts()"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+    <!-- Products Section -->
+    <div id="products-section">
+      <!-- Section Title -->
+      <div class="d-flex align-items-center justify-content-center mb-5">
+        <div class="flex-grow-1 border-top border-success me-3" style="height: 2px;"></div>
+        <h1 class="fw-bold mb-0 text-success">OUR PRODUCTS</h1>
+        <div class="flex-grow-1 border-top border-success ms-3" style="height: 2px;"></div>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="row g-4" id="products-grid">
+        <!-- Products will be loaded here -->
+      </div>
+    </div>
+
+    <!-- Cart Section -->
+    <div id="cart-section" style="display: none;">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-success"><i class="fas fa-shopping-cart me-2"></i>Your Cart</h2>
+        <button class="btn btn-outline-success" onclick="showProducts()">
+          <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+        </button>
+      </div>
+
+      <div id="cart-items">
+        <!-- Cart items will be loaded here -->
+      </div>
+
+      <div id="cart-summary" style="display: none;">
+        <hr />
+        <div class="row">
+          <div class="col-lg-6 col-md-8 mx-auto">
+            <div class="card border-success shadow">
+              <div class="card-body">
+                <h5 class="card-title text-success fw-bold">Order Summary</h5>
+                <div class="d-flex justify-content-between mb-2">
+                  <span class="fw-medium">Total Items:</span>
+                  <span class="fw-medium" id="total-items">0</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                  <strong>Total Amount:</strong>
+                  <strong class="price-tag" id="total-amount">₹0</strong>
+                </div>
+                <button class="btn btn-whatsapp w-100 mt-3 py-2 fw-bold" onclick="orderOnWhatsApp()">
+                  <i class="fab fa-whatsapp me-2"></i>Order on WhatsApp
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Panel Section -->
+    <div id="admin-section">
+      <div class="admin-panel">
+        <div class="admin-header">
+          <h2><i class="fas fa-tools me-2"></i>Admin Product Management</h2>
+          <div>
+            <button class="btn btn-admin me-2" onclick="showProducts()">
+              <i class="fas fa-store me-2"></i>View Store
+            </button>
+            <button class="btn btn-admin btn-admin-logout" onclick="adminLogout()">
+              <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </button>
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <h4 class="mb-3">Add New Product</h4>
+          <form id="product-form" onsubmit="handleAddProduct(event)">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="product-name">Product Name</label>
+                  <input type="text" class="form-control" id="product-name" required>
+                </div>
+                
+                <div class="form-group">
+                  <label for="product-category">Category</label>
+                  <input type="text" class="form-control" id="product-category" required>
+                </div>
+                
+                <div class="form-group">
+                  <label for="product-price">Base Price (₹)</label>
+                  <input type="number" class="form-control" id="product-price" min="1" required>
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="product-description">Description</label>
+                  <textarea class="form-control" id="product-description" rows="3" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                  <label for="product-image">Product Image</label>
+                  <input type="file" class="form-control" id="product-image" accept="image/*" required>
+                  <div class="mt-2">
+                    <img id="image-preview" class="preview-image" src="" alt="Image preview" style="display: none;">
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>Product Sizes</label>
+              <div id="size-container">
+                <!-- Sizes will be added here -->
+              </div>
+              <button type="button" class="btn btn-add-size mt-2" onclick="addSizeInput()">
+                <i class="fas fa-plus me-2"></i>Add Size Option
+              </button>
+            </div>
+            
+            <button type="submit" class="btn btn-admin w-100 py-2">
+              <i class="fas fa-plus-circle me-2"></i>Add Product
+            </button>
+          </form>
+        </div>
+        
+        <div>
+          <h4 class="mb-3">Current Products</h4>
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+              <thead class="table-primary">
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-products-list">
+                <!-- Products will be listed here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="pt-4 pb-3">
+    <div class="container">
+      <div class="row text-center text-md-start">
+        <!-- Brand Info -->
+        <div class="col-lg-4 col-md-6 mb-4">
+          <h5 class="d-flex align-items-center"><i class="fas fa-seedling me-2"></i>Jilani Agro</h5>
+          <p>Providing high-quality agricultural solutions to farmers since 2010. Committed to sustainable farming practices.</p>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="col-lg-2 col-md-6 mb-4">
+          <h6 class="fw-bold">Quick Links</h6>
+          <ul class="list-unstyled">
+            <li class="mb-2"><a href="#" onclick="showProducts()">Home</a></li>
+            <li class="mb-2"><a href="#" onclick="showProducts()">Products</a></li>
+            <li><a href="#" onclick="showCart()">Cart</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="col-lg-3 col-md-6 mb-4">
+          <h6 class="fw-bold">Contact Us</h6>
+          <ul class="list-unstyled">
+            <li class="mb-2"><i class="fas fa-envelope me-2"></i>support@jilaniagro.com</li>
+            <li class="mb-2"><i class="fas fa-phone me-2"></i>+91 9561768395</li>
+            <li><i class="fas fa-map-marker-alt me-2"></i>Jalgaon, Maharashtra</li>
+          </ul>
+        </div>
+
+        <!-- Social Icons -->
+        <div class="col-lg-3 col-md-6 mb-4">
+          <h6 class="fw-bold">Connect With Us</h6>
+          <div class="social-icons mt-3">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-whatsapp"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <hr class="mt-0 mb-4" style="background-color: rgba(255,255,255,0.2);" />
+
+      <!-- Bottom Line -->
+      <div class="row">
+        <div class="col text-center">
+          <p class="mb-0">&copy; 2025 Jilani Agro. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Admin Login Button -->
+  <div class="admin-login-btn" onclick="showAdminLogin()">
+    <i class="fas fa-user-cog"></i>
+  </div>
+
+  <!-- Admin Login Modal -->
+  <div id="admin-login-modal" class="admin-login-modal">
+    <span class="close-admin-modal" onclick="hideAdminLoginModal()">&times;</span>
+    <div class="admin-login-content">
+      <div class="admin-login-header">
+        <h3><i class="fas fa-lock me-2"></i>Admin Login</h3>
+        <p>Access the product management panel</p>
+      </div>
+      <form id="admin-login-form" onsubmit="adminLogin(event)">
+        <div class="form-group">
+          <label for="admin-email">Email</label>
+          <input type="email" class="form-control" id="admin-email" required>
+        </div>
+        <div class="form-group">
+          <label for="admin-password">Password</label>
+          <input type="password" class="form-control" id="admin-password" required>
+        </div>
+        <button type="submit" class="btn btn-admin w-100 py-2">
+          <i class="fas fa-sign-in-alt me-2"></i>Login
+        </button>
+        <div id="login-error" class="text-danger mt-2" style="display: none;"></div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Loading Spinner -->
+  <div id="loading-spinner" class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style="background-color: rgba(0,0,0,0.5); z-index: 2000; display: none;">
+    <div class="spinner-border text-light" role="status" style="width: 3rem; height: 3rem;">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="script.js"></script>
+</body>
+</html>
