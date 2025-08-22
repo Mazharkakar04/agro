@@ -1,20 +1,20 @@
-
 [
   {
-    "id": 1,
-    "name": "Banana Juice",
-    "category": "Fertilizer",
-    "basePrice": 350,
-    "description": "Premium organic compost for soil enrichment and plant growth.",
-    "image": "https://i.ibb.co/rqhFWBM/IMG-20250821-WA0000.jpg",
-    "sizes": [{ "size": "1kg", "multiplier": 1 }, { "size": "3kg", "multiplier": 3 }]
-  },
-{
-  "id": 2,
-  "name": "Next item",
-  "category": "whatever",
-  "description": "write your description here",
-  "image": "https://i.ibb.co/rqhFWBM/IMG-20250821-WA0000.jpg",
-  "sizes": [{"size": "1kg", "multiplier": 1}, {"size": "2kg", "multiplier": 2}]
-}  
+    "id": 2,
+    "name": "demo",
+    "category": "demo",
+    "basePrice": 200,
+    "description": "demo",
+    "image": "https://i.ibb.co/6cVndzgf/100-Gm-copy-3002d57b-7d72-48f3-9917-83be95b3cfe9.jpg",
+    "sizes": [
+      {
+        "size": "1kg",
+        "multiplier": 1
+      },
+      {
+        "size": "5",
+        "multiplier": 5
+      }
+    ]
+  }
 ]
