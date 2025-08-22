@@ -8,11 +8,9 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css">
-  <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
   <script type="module" src="firebase.js"></script>
 </head>
 <body>
-  <!-- Navigation -->
   <nav class="navbar navbar-expand-lg navbar-light fixed-top">
     <div class="container">
       <a class="navbar-brand" href="#" onclick="showProducts()">
@@ -27,13 +25,11 @@
     </div>
   </nav>
 
-  <!-- Hero Section -->
   <section class="hero-section">
     <div class="container">
       <h1 class="hero-title">Premium Agricultural Products</h1>
       <p class="hero-subtitle">High-quality fertilizers and plant nutrients for maximum crop yield and healthy soil</p>
       
-      <!-- Search Bar -->
       <div class="row justify-content-center mb-4">
         <div class="col-lg-6 col-md-8">
           <div class="input-group shadow-sm">
@@ -52,22 +48,17 @@
   </section>
 
   <div class="container">
-    <!-- Products Section -->
     <div id="products-section">
-      <!-- Section Title -->
       <div class="d-flex align-items-center justify-content-center mb-5">
         <div class="flex-grow-1 border-top border-success me-3" style="height: 2px;"></div>
         <h1 class="fw-bold mb-0 text-success">OUR PRODUCTS</h1>
         <div class="flex-grow-1 border-top border-success ms-3" style="height: 2px;"></div>
       </div>
 
-      <!-- Products Grid -->
       <div class="row g-4" id="products-grid">
-        <!-- Products will be loaded here -->
-      </div>
+        </div>
     </div>
 
-    <!-- Cart Section -->
     <div id="cart-section" style="display: none;">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="text-success"><i class="fas fa-shopping-cart me-2"></i>Your Cart</h2>
@@ -77,8 +68,7 @@
       </div>
 
       <div id="cart-items">
-        <!-- Cart items will be loaded here -->
-      </div>
+        </div>
 
       <div id="cart-summary" style="display: none;">
         <hr />
@@ -105,7 +95,6 @@
       </div>
     </div>
 
-    <!-- Admin Panel Section -->
     <div id="admin-section">
       <div class="admin-panel">
         <div class="admin-header">
@@ -148,8 +137,8 @@
                 </div>
                 
                 <div class="form-group">
-                  <label for="product-image">Product Image</label>
-                  <input type="file" class="form-control" id="product-image" accept="image/*" required>
+                  <label for="product-image">Product Image URL</label>
+                  <input type="url" class="form-control" id="product-image" required>
                   <div class="mt-2">
                     <img id="image-preview" class="preview-image" src="" alt="Image preview" style="display: none;">
                   </div>
@@ -160,8 +149,7 @@
             <div class="form-group">
               <label>Product Sizes</label>
               <div id="size-container">
-                <!-- Sizes will be added here -->
-              </div>
+                </div>
               <button type="button" class="btn btn-add-size mt-2" onclick="addSizeInput()">
                 <i class="fas fa-plus me-2"></i>Add Size Option
               </button>
@@ -187,8 +175,7 @@
                 </tr>
               </thead>
               <tbody id="admin-products-list">
-                <!-- Products will be listed here -->
-              </tbody>
+                </tbody>
             </table>
           </div>
         </div>
@@ -199,13 +186,11 @@
   <footer class="pt-4 pb-3">
     <div class="container">
       <div class="row text-center text-md-start">
-        <!-- Brand Info -->
         <div class="col-lg-4 col-md-6 mb-4">
           <h5 class="d-flex align-items-center"><i class="fas fa-seedling me-2"></i>Jilani Agro</h5>
           <p>Providing high-quality agricultural solutions to farmers since 2010. Committed to sustainable farming practices.</p>
         </div>
 
-        <!-- Quick Links -->
         <div class="col-lg-2 col-md-6 mb-4">
           <h6 class="fw-bold">Quick Links</h6>
           <ul class="list-unstyled">
@@ -215,7 +200,6 @@
           </ul>
         </div>
 
-        <!-- Contact Info -->
         <div class="col-lg-3 col-md-6 mb-4">
           <h6 class="fw-bold">Contact Us</h6>
           <ul class="list-unstyled">
@@ -225,7 +209,6 @@
           </ul>
         </div>
 
-        <!-- Social Icons -->
         <div class="col-lg-3 col-md-6 mb-4">
           <h6 class="fw-bold">Connect With Us</h6>
           <div class="social-icons mt-3">
@@ -239,7 +222,6 @@
 
       <hr class="mt-0 mb-4" style="background-color: rgba(255,255,255,0.2);" />
 
-      <!-- Bottom Line -->
       <div class="row">
         <div class="col text-center">
           <p class="mb-0">&copy; 2025 Jilani Agro. All rights reserved.</p>
@@ -248,12 +230,10 @@
     </div>
   </footer>
 
-  <!-- Admin Login Button -->
   <div class="admin-login-btn" onclick="showAdminLogin()">
     <i class="fas fa-user-cog"></i>
   </div>
 
-  <!-- Admin Login Modal -->
   <div id="admin-login-modal" class="admin-login-modal">
     <span class="close-admin-modal" onclick="hideAdminLoginModal()">&times;</span>
     <div class="admin-login-content">
@@ -278,7 +258,6 @@
     </div>
   </div>
   
-  <!-- Loading Spinner -->
   <div id="loading-spinner" class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style="background-color: rgba(0,0,0,0.5); z-index: 2000; display: none;">
     <div class="spinner-border text-light" role="status" style="width: 3rem; height: 3rem;">
       <span class="visually-hidden">Loading...</span>
