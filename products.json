@@ -1,13 +1,5 @@
 [
-  {
-    "id": 1,
-    "name": "Hot Pepper Hybrid (HPH-5531) Chilli Seeds",
-    "category": "Seeds",
-    "basePrice": 150,
-    "description": "High-quality seeds for maximum yield.",
-    "image": "./images/product1.png",
-    "sizes": [{ "size": "100g", "multiplier": 1 }, { "size": "200g", "multiplier": 1.8 }]
-  },
+  
   {
     "id": 2,
     "name": "Syngenta TO-1057 Tomato Seeds",
