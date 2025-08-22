@@ -73,12 +73,12 @@ body {
 }
 
 .product-image {
-    height: 200px;
-    width: 200px;
-    /* makes the image square */
-    object-fit: cover;
-    background: var(--light-green);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  height: 200px;
+  width: 100%; /* allows the image to fit its container */
+  margin: 0 auto; /* for centering when used as a block */
+  object-fit: cover;
+  background: var(--light-green);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .card-title {
