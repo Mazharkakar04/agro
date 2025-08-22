@@ -1,0 +1,56 @@
+[
+  {
+    "id": 1,
+    "name": "Hot Pepper Hybrid (HPH-5531) Chilli Seeds",
+    "category": "Seeds",
+    "basePrice": 150,
+    "description": "High-quality seeds for maximum yield.",
+    "image": "./images/product1.png",
+    "sizes": [{ "size": "100g", "multiplier": 1 }, { "size": "200g", "multiplier": 1.8 }]
+  },
+  {
+    "id": 2,
+    "name": "Syngenta TO-1057 Tomato Seeds",
+    "category": "Seeds",
+    "basePrice": 200,
+    "description": "Produces firm, disease-resistant tomatoes.",
+    "image": "./images/product2.png",
+    "sizes": [{ "size": "50g", "multiplier": 1 }, { "size": "100g", "multiplier": 1.9 }]
+  },
+  {
+    "id": 3,
+    "name": "Cheramy RZ F1 (72-122) Cherry Tomato Seeds",
+    "category": "Seeds",
+    "basePrice": 250,
+    "description": "Sweet and juicy cherry tomatoes for a great harvest.",
+    "image": "./images/product3.png",
+    "sizes": [{ "size": "50g", "multiplier": 1 }]
+  },
+  {
+    "id": 4,
+    "name": "Hybrid Hot Pepper Sitara",
+    "category": "Seeds",
+    "basePrice": 180,
+    "description": "A robust hybrid pepper with high heat.",
+    "image": "./images/product4.png",
+    "sizes": [{ "size": "100g", "multiplier": 1 }]
+  },
+  {
+    "id": 5,
+    "name": "Dhaincha Seeds Sesbania aculeata",
+    "category": "Seeds",
+    "basePrice": 120,
+    "description": "Used for green manure and soil improvement.",
+    "image": "./images/product5.png",
+    "sizes": [{ "size": "1kg", "multiplier": 1 }, { "size": "5kg", "multiplier": 4.5 }]
+  },
+  {
+    "id": 6,
+    "name": "Sunrise BIO-FERTILIZER",
+    "category": "Fertilizer",
+    "basePrice": 300,
+    "description": "An organic bio-fertilizer that improves soil health.",
+    "image": "./images/product6.png",
+    "sizes": [{ "size": "1kg", "multiplier": 1 }]
+  }
+]
