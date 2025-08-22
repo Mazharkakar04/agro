@@ -55,13 +55,15 @@ let isLoading = false;
 
     // Load products from Firestore
     async function loadProducts() {
-      try {
-        products = await getProducts();
-      } catch (error) {
-        console.error('Error loading products from Firestore:', error);
-        showToast("Error loading products. Please refresh the page.");
-        products = [];
-      }
+      // Hardcode product data and image paths
+      products = [
+        { id: 1, name: 'Hot Pepper Hybrid (HPH-5531) Chilli Seeds', category: 'Seeds', basePrice: 150, description: '...', image: './images/product1.png', sizes: [{size: '100g', multiplier: 1}] },
+        { id: 2, name: 'Syngenta TO-1057 Tomato Seeds', category: 'Seeds', basePrice: 200, description: '...', image: './images/product2.png', sizes: [{size: '100g', multiplier: 1}] },
+        { id: 3, name: 'Cheramy RZ F1 (72-122) Cherry Tomato Seeds', category: 'Seeds', basePrice: 250, description: '...', image: './images/product3.png', sizes: [{size: '100g', multiplier: 1}] },
+        { id: 4, name: 'Hybrid Hot Pepper Sitara', category: 'Seeds', basePrice: 180, description: '...', image: './images/product4.png', sizes: [{size: '100g', multiplier: 1}] },
+        { id: 5, name: 'Dhaincha Seeds Sesbania aculeata', category: 'Seeds', basePrice: 120, description: '...', image: './images/product5.png', sizes: [{size: '100g', multiplier: 1}] },
+        { id: 6, name: 'Sunrise BIO-FERTILIZER', category: 'Fertilizer', basePrice: 300, description: '...', image: './images/product6.png', sizes: [{size: '1kg', multiplier: 1}] }
+      ];
     }
     
     // Show loading spinner
