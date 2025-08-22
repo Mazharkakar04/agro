@@ -3,7 +3,7 @@ import {
   getProducts, addProduct, updateProduct, deleteProduct,
   loginAdmin, logoutAdmin, onAuthStateChange,
   saveUserCart, getUserCart,
-  auth, db, storage
+  auth, db
 } from './firebase.js';
 
 // Global variables
@@ -19,9 +19,15 @@ let isLoading = false;
       showLoading();
       try {
         // Check if user is already logged in
-        onAuthStateChange((user) => {
+        onAuthStateChange(async (user) => {
           currentUser = user;
-          adminLoggedIn = !!user;
+          if (user) {
+            const adminDoc = await db.collection('admins').doc(user.uid).get();
+            adminLoggedIn = adminDoc.exists && adminDoc.data().role === 'admin';
+          } else {
+            adminLoggedIn = false;
+          }
+
           if (adminLoggedIn) {
             document.querySelector('.admin-login-btn').style.display = 'none';
           } else {
