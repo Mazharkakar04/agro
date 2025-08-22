@@ -6,19 +6,58 @@ let currentSort = 'default';
 // Initialize the app
 async function init() {
   try {
-    const response = await fetch('products.json');
+    // Replace this URL with your published Google Sheet CSV URL
+    const googleSheetUrl = 'YOUR_PUBLISHED_GOOGLE_SHEET_URL_HERE';
+    const response = await fetch(googleSheetUrl);
+    
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
-    products = await response.json();
+    
+    const csvData = await response.text();
+    products = parseCsvToProducts(csvData);
     
     loadCart();
     displayProducts();
     updateCartCount();
   } catch (error) {
     console.error("Initialization error:", error);
-    showToast("Error initializing app. Please refresh the page.");
+    showToast("Error initializing app. Please check the data source.");
   }
+}
+
+// Helper function to parse CSV from Google Sheet and convert to products array
+function parseCsvToProducts(csv) {
+    const rows = csv.split('\n').map(row => row.trim()).filter(row => row.length > 0);
+    const headers = rows[0].split(',');
+    const data = rows.slice(1);
+    
+    const productsArray = data.map(row => {
+        const values = row.split(',');
+        const product = {};
+        headers.forEach((header, index) => {
+            product[header.trim()] = values[index].trim();
+        });
+
+        // Convert data types
+        product.id = parseInt(product.id);
+        product.basePrice = parseFloat(product.basePrice);
+        
+        // Handle the sizes array, assuming sizes are separated by a character like |
+        if (product.sizes) {
+            product.sizes = product.sizes.split('|').map(sizePair => {
+                const [size, multiplier] = sizePair.split(':');
+                return {
+                    size: size,
+                    multiplier: parseFloat(multiplier)
+                };
+            });
+        }
+        
+        return product;
+    });
+
+    return productsArray;
 }
 
 // Display products
