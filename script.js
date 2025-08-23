@@ -126,17 +126,22 @@ function parseCsvToProducts(csv) {
 
         // Convert data types
         product.id = parseInt(product.id);
-        product.basePrice = parseFloat(product.basePrice);
-
-        // Handle the sizes array, assuming sizes are separated by a character like |
+        
+        // Handle the sizes and discounts arrays
         if (product.sizes) {
-            product.sizes = product.sizes.split('|').map(sizePair => {
-                const [size, multiplier] = sizePair.split(':');
+            const sizeValues = product.sizes.split('|').map(sizePair => {
+                const [size, price] = sizePair.split(':');
                 return {
                     size: size,
-                    multiplier: parseFloat(multiplier)
+                    price: parseFloat(price)
                 };
             });
+            const discountValues = product.discounts ? product.discounts.split('|').map(d => parseFloat(d) || 0) : new Array(sizeValues.length).fill(0);
+
+            product.sizes = sizeValues.map((sizeObj, index) => ({
+                ...sizeObj,
+                discount: discountValues[index]
+            }));
         }
 
         return product;
@@ -152,9 +157,17 @@ function displayProducts(productsToShow = products) {
 
     let sortedProducts = [...productsToShow];
     if (currentSort === 'price-low') {
-        sortedProducts.sort((a, b) => a.basePrice - b.basePrice);
+        sortedProducts.sort((a, b) => {
+            const aPrice = a.sizes[0].price - a.sizes[0].discount;
+            const bPrice = b.sizes[0].price - b.sizes[0].discount;
+            return aPrice - bPrice;
+        });
     } else if (currentSort === 'price-high') {
-        sortedProducts.sort((a, b) => b.basePrice - a.basePrice);
+        sortedProducts.sort((a, b) => {
+            const aPrice = a.sizes[0].price - a.sizes[0].discount;
+            const bPrice = b.sizes[0].price - b.sizes[0].discount;
+            return bPrice - aPrice;
+        });
     } else if (currentSort === 'name') {
         sortedProducts.sort((a, b) => a.name.localeCompare(b.name));
     }
@@ -168,10 +181,12 @@ function displayProducts(productsToShow = products) {
 // Create product card
 function createProductCard(product) {
     const col = document.createElement('div');
-  col.className = 'col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-4';
+  col.className = 'col-xl-3 col-lg-4 col-md-6 col-sm-6 col-6 mb-4';
 
     const defaultSize = product.sizes[0];
-    const defaultPrice = Math.round(product.basePrice * defaultSize.multiplier);
+    const originalPrice = Math.round(defaultSize.price);
+    const discountedPrice = Math.round(originalPrice - defaultSize.discount);
+    const discountAmount = defaultSize.discount;
 
     col.innerHTML = `
     <div class="card product-card h-100 position-relative">
@@ -185,11 +200,12 @@ function createProductCard(product) {
           <label class="form-label fw-medium" data-lang-key="card-label-size">${translations[currentLanguage]['card-label-size']}</label>
           <select class="form-select form-select-sm border-success" id="size-${product.id}" onchange="updatePrice(${product.id})">
             ${product.sizes.map(size => {
-        const price = Math.round(product.basePrice * size.multiplier);
-        return `<option value="${size.size}" data-multiplier="${size.multiplier}">
-                        ${size.size} - ₹${price}
+                const sizeOriginalPrice = Math.round(size.price);
+                const sizeDiscountedPrice = Math.round(sizeOriginalPrice - size.discount);
+                return `<option value="${size.size}" data-price="${size.price}" data-discount="${size.discount}">
+                        ${size.size} - ₹${sizeDiscountedPrice}
                       </option>`;
-    }).join('')}
+            }).join('')}
           </select>
         </div>
         <div class="mb-3">
@@ -201,8 +217,12 @@ function createProductCard(product) {
           </div>
         </div>
         <div class="mt-auto">
+          <div class="d-flex align-items-center mb-1">
+            ${discountAmount > 0 ? `<span class="discount-badge me-2">₹${discountAmount} OFF</span>` : ''}
+          </div>
           <div class="d-flex align-items-center">
-            <div class="price-tag me-2" id="price-${product.id}">₹${defaultPrice}</div>
+            ${discountAmount > 0 ? `<div class="me-2 text-decoration-line-through text-muted" id="original-price-${product.id}">₹${originalPrice}</div>` : ''}
+            <div class="price-tag" id="price-${product.id}">₹${discountedPrice}</div>
           </div>
           <button class="btn btn-success w-100 mt-2 fw-medium" onclick="addToCart(${product.id})" data-lang-key="add-to-cart">
             <i class="fas fa-cart-plus me-2"></i>${translations[currentLanguage]['add-to-cart']}
@@ -211,7 +231,6 @@ function createProductCard(product) {
       </div>
     </div>
   `;
-
     return col;
 }
 
@@ -220,10 +239,27 @@ function updatePrice(productId) {
     const product = products.find(p => p.id === productId);
     const sizeSelect = document.getElementById(`size-${productId}`);
     const selectedOption = sizeSelect.selectedOptions[0];
-    const multiplier = parseFloat(selectedOption.dataset.multiplier);
-    const price = Math.round(product.basePrice * multiplier);
+    const originalPrice = parseFloat(selectedOption.dataset.price);
+    const discount = parseFloat(selectedOption.dataset.discount);
+    
+    const discountedPrice = Math.round(originalPrice - discount);
 
-    document.getElementById(`price-${productId}`).innerHTML = `₹${price}`;
+    document.getElementById(`price-${productId}`).innerHTML = `₹${discountedPrice}`;
+    
+    const originalPriceEl = document.getElementById(`original-price-${productId}`);
+    if (originalPriceEl) {
+        originalPriceEl.innerHTML = `₹${originalPrice}`;
+    }
+
+    const discountBadge = document.querySelector(`#products-grid .col-xl-3.col-lg-4.col-md-6.col-sm-6.col-12.mb-4:has(#size-${productId}) .discount-badge`);
+    if (discountBadge) {
+        if (discount > 0) {
+            discountBadge.textContent = `₹${discount} OFF`;
+            discountBadge.style.display = 'inline-block';
+        } else {
+            discountBadge.style.display = 'none';
+        }
+    }
 }
 
 // Change quantity
@@ -252,17 +288,18 @@ function addToCart(productId) {
     const sizeSelect = document.getElementById(`size-${productId}`);
     const selectedOption = sizeSelect.selectedOptions[0];
     const selectedSize = sizeSelect.value;
-    const multiplier = parseFloat(selectedOption.dataset.multiplier);
-    const quantity = parseInt(document.getElementById(`qty-${product.id}`).value);
-    const price = Math.round(product.basePrice * multiplier);
+    const originalPrice = parseFloat(selectedOption.dataset.price);
+    const discount = parseFloat(selectedOption.dataset.discount);
+    
+    const price = Math.round(originalPrice - discount);
 
     const cartItem = {
         id: productId,
         name: product.name,
         size: selectedSize,
-        quantity: quantity,
+        quantity: parseInt(document.getElementById(`qty-${product.id}`).value),
         price: price,
-        total: price * quantity,
+        total: price * parseInt(document.getElementById(`qty-${product.id}`).value),
         image: product.image
     };
 
@@ -271,7 +308,7 @@ function addToCart(productId) {
     );
 
     if (existingIndex > -1) {
-        cart[existingIndex].quantity += quantity;
+        cart[existingIndex].quantity += cartItem.quantity;
         cart[existingIndex].total = cart[existingIndex].price * cart[existingIndex].quantity;
     } else {
         cart.push(cartItem);
