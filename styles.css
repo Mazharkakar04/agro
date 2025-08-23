@@ -209,6 +209,17 @@ footer a:hover {
     transform: translateY(-3px);
 }
 
+/* Add to styles.css */
+.discount-badge {
+    background-color: var(--jilani-green); /* A nice green color for the badge */
+    color: white;
+    font-weight: bold;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    letter-spacing: 0.5px;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .hero-section {
